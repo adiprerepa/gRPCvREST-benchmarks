@@ -5,7 +5,8 @@ import time
 import timeit
 import chunk_pb2, chunk_pb2_grpc
 
-CHUNK_SIZE = 1024 * 1024  # 1MB
+
+CHUNK_SIZE = 4* 1024 * 1024  # 1MB
 
 
 def get_file_chunks(filename):
@@ -28,7 +29,9 @@ def cleanup(filename):
 
 class FileClient:
     def __init__(self, address):
-        channel = grpc.insecure_channel(address)
+        channel = grpc.insecure_channel(address, options=[
+                ('grpc.max_send_message_length', 1024**2 * 5)
+            ])
         self.stub = chunk_pb2_grpc.FileServerStub(channel)
 
     def upload(self, in_file_name):
@@ -61,7 +64,7 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
                 if request.name:
                     return get_file_chunks(self.tmp_file_name)
 
-        self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=1))
+        self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         chunk_pb2_grpc.add_FileServerServicer_to_server(Servicer(), self.server)
 
     def start(self, port):
@@ -69,13 +72,5 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
         self.server.add_insecure_port(address)
         print('starting on %s' % address)
         self.server.start()
+        self.server.wait_for_termination()
 
-        try:
-            while True:
-                time.sleep(60*60*24)
-        except KeyboardInterrupt:
-            self.server.stop(0)
-
-class RESTFileServer():
-    def __init__(self):
-        self.tmp_file_name = '/tmp/server_tmp'

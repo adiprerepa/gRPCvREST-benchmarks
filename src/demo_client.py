@@ -3,7 +3,7 @@ import os
 import lib
 
 
-client = lib.FileClient('192.168.88.214:8888')
+client = lib.FileClient('192.168.88.143:8888')
 in_file_name = '/home/aditya/Downloads/5GiB.bin'
 
 
