@@ -65,7 +65,9 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
         chunk_pb2_grpc.add_FileServerServicer_to_server(Servicer(), self.server)
 
     def start(self, port):
-        self.server.add_insecure_port(f'127.0.0.1:{port}')
+        address = '[::]:%d' % (port)
+        self.server.add_insecure_port(address)
+        print('starting on %s' % address)
         self.server.start()
 
         try:
@@ -73,3 +75,7 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
                 time.sleep(60*60*24)
         except KeyboardInterrupt:
             self.server.stop(0)
+
+class RESTFileServer():
+    def __init__(self):
+        self.tmp_file_name = '/tmp/server_tmp'

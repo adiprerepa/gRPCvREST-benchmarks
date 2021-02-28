@@ -1,6 +1,6 @@
 About
 =====
-Handy tool for large file transfering using gRPC.
+Benchmarks for gRPC vs REST run on file size transfer ranging from 1GiB-10GiB
 
 Demo
 =====
@@ -8,11 +8,11 @@ Demo
 Server side:
 
 ```
-python3.6 src/demo_server.py
+python3 src/demo_server.py
 ```
 
 Client side:
 
 ```
-python3.6 src/demo_client.py
+python3 src/demo_client.py
 ```
