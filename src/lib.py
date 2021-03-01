@@ -10,7 +10,6 @@ import chunk_pb2, chunk_pb2_grpc
 def get_file_chunks(filename, chunk_size):
     with open(filename, 'rb') as f:
         while True:
-            print(chunk_size)
             piece = f.read(chunk_size)
             if len(piece) == 0:
                 return

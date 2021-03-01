@@ -1,14 +1,18 @@
 import lib
 import threading
-from bottle import run, put
+from bottle import run, put, request, response
 import sys
 # grpc -> 8888
+import time
 # rest -> 8080
-
-@put('/')
+import json
+@put('/upload-file')
 def yo():
+    # print(request['wsgi.input'])
+    print(request.body) 
     return 'yo'
 
+# max 1024*100
 if __name__ == '__main__':
    # lib.FileServer().start(8888)
    server = lib.FileServer()
