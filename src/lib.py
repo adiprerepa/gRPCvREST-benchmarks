@@ -6,7 +6,7 @@ import timeit
 import chunk_pb2, chunk_pb2_grpc
 
 
-CHUNK_SIZE = 4* 1024 * 1024  # 1MB
+CHUNK_SIZE = 1024 * 1 * 1024  # 1MB
 
 
 def get_file_chunks(filename):
@@ -30,8 +30,8 @@ def cleanup(filename):
 class FileClient:
     def __init__(self, address):
         channel = grpc.insecure_channel(address, options=[
-                ('grpc.max_send_message_length', 1024**2 * 5)
-            ])
+            ('grpc.max_send_message_length', 1024**3),
+        ])
         self.stub = chunk_pb2_grpc.FileServerStub(channel)
 
     def upload(self, in_file_name):
