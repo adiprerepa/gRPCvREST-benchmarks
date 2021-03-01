@@ -6,12 +6,11 @@ import timeit
 import chunk_pb2, chunk_pb2_grpc
 
 
-CHUNK_SIZE = 1024 * 1 * 1024  # 1MB
 
-def get_file_chunks(filename):
+def get_file_chunks(filename, chunk_size):
     with open(filename, 'rb') as f:
         while True:
-            piece = f.read(CHUNK_SIZE);
+            piece = f.read(chunk_size);
             if len(piece) == 0:
                 return
             yield chunk_pb2.Chunk(buffer=piece)
@@ -37,7 +36,7 @@ class FileClient:
 
     def upload(self, in_file_name):
         t1 = timeit.default_timer()
-        chunks_generator = get_file_chunks(in_file_name)
+        chunks_generator = get_file_chunks(in_file_name, self.chunk_size)
         response = self.stub.upload(chunks_generator)
         print('upload of file took %.15f' % (timeit.default_timer() - t1))
         assert response.length == os.path.getsize(in_file_name)
@@ -64,7 +63,7 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
 
             def download(self, request, context):
                 if request.name:
-                    return get_file_chunks(self.tmp_file_name)
+                    return get_file_chunks(self.tmp_file_name, self.chunk_size)
 
         self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         chunk_pb2_grpc.add_FileServerServicer_to_server(Servicer(), self.server)
