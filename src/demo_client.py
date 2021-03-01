@@ -11,8 +11,8 @@ def bench_gRPC_upload(benchmark):
     benchmark(client.upload, in_file_name)
     
 if __name__ == '__main__':
-    if len(sys.argv) == 1:
-        chunk_size = 1024**2 * sys.argv[0]
+    if len(sys.argv) == 2:
+        chunk_size = 1024**2 * int(sys.argv[1])
         client.chunk_size = chunk_size
     # demo for file uploading
     client.upload(in_file_name)
