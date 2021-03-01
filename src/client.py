@@ -3,9 +3,10 @@ import sys
 import lib
 import http.client
 import time
+import timeit
 from contextlib import closing
 url = '192.168.88.143:8888'
-rest_url = '127.0.0.1:8080'
+rest_url = '192.168.88.143:8080'
 client = lib.FileClient(url)
 in_file_name = '/home/aditya/Downloads/5GiB.bin'
 
@@ -43,4 +44,6 @@ if __name__ == '__main__':
         client.chunk_size = chunk_size
     # demo for file uploading
     #client.upload(in_file_name)
+    t1 = timeit.default_timer()
     upload_rest_chunked(in_file_name, 1024*16)
+    print('upload of file took %.15f' % (timeit.default_timer() - t1))

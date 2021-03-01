@@ -20,6 +20,6 @@ if __name__ == '__main__':
        chunk_size = 1024**2 * int(sys.argv[1])
        server.chunk_size = chunk_size
    rpc_thread = threading.Thread(target=server.start, args=(8888,))
-   rest_thread = threading.Thread(target=run, kwargs={'host': '127.0.0.1', 'port': 8080})
+   rest_thread = threading.Thread(target=run, kwargs={'host': '0.0.0.0', 'port': 8080})
    rpc_thread.start()
    rest_thread.start()
