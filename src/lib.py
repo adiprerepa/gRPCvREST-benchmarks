@@ -11,7 +11,7 @@ def get_file_chunks(filename, chunk_size):
     with open(filename, 'rb') as f:
         while True:
             print(chunk_size)
-            piece = f.read(chunk_size);
+            piece = f.read(chunk_size)
             if len(piece) == 0:
                 return
             yield chunk_pb2.Chunk(buffer=piece)
@@ -29,8 +29,9 @@ def cleanup(filename):
 class FileClient:
     def __init__(self, address):
         channel = grpc.insecure_channel(address, options=[
-            ('grpc.max_send_message_length', 1024**3),
-        ])
+                ('grpc.max_send_message_length', 1024**3),
+                ('grpc.max_receive_message_length', 1024**3)
+            ])
         self.stub = chunk_pb2_grpc.FileServerStub(channel)
         # default chunk size of 1 MB
         self.chunk_size = 1024**2
@@ -66,7 +67,11 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
                 if request.name:
                     return get_file_chunks(self.tmp_file_name, self.chunk_size)
 
-        self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        self.server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), options=[
+                ('grpc.max_send_message_length', 1024**3),
+                ('grpc.max_receive_message_length', 1024**3)
+
+            ])
         chunk_pb2_grpc.add_FileServerServicer_to_server(Servicer(), self.server)
 
     def start(self, port):
