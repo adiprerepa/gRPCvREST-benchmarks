@@ -8,7 +8,6 @@ import chunk_pb2, chunk_pb2_grpc
 
 CHUNK_SIZE = 1024 * 1 * 1024  # 1MB
 
-
 def get_file_chunks(filename):
     with open(filename, 'rb') as f:
         while True:
@@ -33,6 +32,8 @@ class FileClient:
             ('grpc.max_send_message_length', 1024**3),
         ])
         self.stub = chunk_pb2_grpc.FileServerStub(channel)
+        # default chunk size of 1 MB
+        self.chunk_size = 1024**2
 
     def upload(self, in_file_name):
         t1 = timeit.default_timer()
@@ -52,6 +53,7 @@ class FileServer(chunk_pb2_grpc.FileServerServicer):
         class Servicer(chunk_pb2_grpc.FileServerServicer):
             def __init__(self):
                 self.tmp_file_name = '/tmp/server_tmp'
+                self.chunk_size = 1024**2
 
             def upload(self, request_iterator, context):
                 save_chunks_to_file(request_iterator, self.tmp_file_name)
