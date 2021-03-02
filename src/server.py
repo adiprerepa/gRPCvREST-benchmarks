@@ -1,4 +1,4 @@
-import lib
+import grpclib 
 import threading
 from bottle import run, put, request, response
 import sys
@@ -14,8 +14,7 @@ def yo():
 
 # max 1024*100
 if __name__ == '__main__':
-   # lib.FileServer().start(8888)
-   server = lib.FileServer()
+   server = grpclib.FileServer()
    if len(sys.argv) == 2:
        chunk_size = 1024**2 * int(sys.argv[1])
        server.chunk_size = chunk_size
