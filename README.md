@@ -42,8 +42,8 @@ As for the `rest` option, it uses chunked transfer encoding, following roughly t
 More official benchmarks to come, and you can run it on your system, but it looks like these seem to perform the same.
 
 For a 5 GB file on a ~400 MBPS network, it took:
-- grpc protocol an average of `185.12` seconds
-- rest protocol an average of `186.51` seconds
+- grpc protocol an average of `46.3` seconds
+- rest protocol an average of `46.7` seconds
 
 
 We can conclude that for streaming large files, there really isn't much of a difference for gRPC vs REST.
