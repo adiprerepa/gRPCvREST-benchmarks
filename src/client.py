@@ -51,3 +51,4 @@ if __name__ == '__main__':
     else:
         client.chunk_size = chunk_size
         client.upload(in_file_name)
+        client.wait_cbs()

@@ -34,17 +34,24 @@ class FileClient:
         self.stub = chunk_pb2_grpc.FileServerStub(channel)
         # default chunk size of 1 MB
         self.chunk_size = 1024**2
+        self.response_cbs = []
 
     def upload(self, in_file_name):
         t1 = timeit.default_timer()
         chunks_generator = get_file_chunks(in_file_name, self.chunk_size)
-        response = self.stub.upload(chunks_generator)
+        response_future = self.stub.upload.future(chunks_generator)
         print('upload of file took %.15f' % (timeit.default_timer() - t1))
-        assert response.length == os.path.getsize(in_file_name)
+        self.response_cbs.append(response_future)
+        #assert response.length == os.path.getsize(in_file_name)
 
     def download(self, target_name, out_file_name):
         response = self.stub.download(chunk_pb2.Request(name=target_name))
         save_chunks_to_file(response, out_file_name)
+
+    def wait_cbs(self):
+        for cb in self.response_cbs:
+            result = cb.result()
+            print(result)
 
 
 class FileServer(chunk_pb2_grpc.FileServerServicer):
